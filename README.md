@@ -1,2 +1,2 @@
 # StockProphet
-Stock predictor using Recurrent neural networks
+Stock predictor using Recurrent Neural Networks
