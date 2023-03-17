@@ -31,20 +31,23 @@ class StockProphet:
     
     def load_training(self, file_name):
         data_train = pd.read_csv(file_name)
-        self._train_set = data_train.iloc[:, 1:2].values
+        train_set = data_train.iloc[:, 1:2].values
         
         self._sc = MinMaxScaler(feature_range = (0, 1))
-        self._train_set = self._sc.fit_transform(self._train_set)
-        logging.debug(f'training set:\n{self._train_set}')
+        train_set = self._sc.fit_transform(train_set)
+        logging.debug(f'training set:\n{train_set}')
         
         # Creating a data structure with 60 timesteps and 1 output
         history = 60
-        X_train = []
-        y_train = []
-        for i in range(history, 1258):
-            X_train.append(self._train_set[i-history:i, 0])
-            y_train.append(self._train_set[i, 0])
-        X_train, y_train = np.array(X_train), np.array(y_train)
+        self._features_train = []
+        self._results_train = []
+        for i in range(history, len(train_set)):
+            self._features_train.append(train_set[i-history:i, 0])
+            self._results_train.append(train_set[i, 0])
+        self._features_train, self._results_train = np.array(self._features_train), np.array(self._results_train)
+        
+        # Reshaping
+        self._features_train = np.reshape(self._features_train, (self._features_train.shape[0], self._features_train.shape[1], 1))
 
 
 if __name__ == "__main__":
