@@ -1,6 +1,8 @@
 import requests
 import os
 import urllib.parse
+import csv
+import models.ohlcv as ohlcv
  
 class CryptoCompare:
     def __init__(self, env_name='CRYPTO_COMPARE_API_KEY'):
@@ -24,12 +26,24 @@ class CryptoCompare:
         
         if response.status_code == 200:
             data = response.json()
-            return data
+            if data['Response'] == 'Success':
+                return self._convert_to_ohlvc(data)
+            else:
+                print("Error: ", data['Response'])
+                return None
         else:
             print("Error: ", response.status_code)
             return None
-
-    def save_price_history_to_csv(self, history):
-        print(history)
-        for data_point in history['Data']['Data']:
-            print(data_point)
+        
+    def _convert_to_ohlvc(self, data):
+        ohlvc_list = []
+        for data_point in data['Data']['Data']:
+            ohlvc_list.append(ohlcv.OHLCV(
+                data_point['time'], 
+                data_point['open'],
+                data_point['high'],
+                data_point['low'],
+                data_point['close'],
+                data_point['volumeto']
+                ))
+        return ohlvc_list
