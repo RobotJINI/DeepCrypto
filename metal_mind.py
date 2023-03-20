@@ -124,7 +124,7 @@ class StockProphet:
 if __name__ == "__main__":
     logging.basicConfig(format='\n%(message)s\n', level=logging.DEBUG)
     
-    model_name = './models/google_stock.h5'
+    model_name = './models/saved/google_stock.h5'
     train_file_name = './datasets/Google_Stock_Price_Train.csv'
     test_file_name = './datasets/Google_Stock_Price_Test.csv'
     
