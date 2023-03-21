@@ -1,6 +1,10 @@
 # DeepCrypto
 This project uses a Long Short-Term Memory (LSTM) neural network to predict the price of Bitcoin in US dollars. The LSTM model is implemented using the Keras library in Python.
 
+<p align="center">
+  <img width="460" height="300" src="https://user-images.githubusercontent.com/571631/226732799-c76fa7c1-bc2c-4192-8bb8-7005770d8dd1.png">
+</p>
+
 ## Dataset
 The daily historical price data for Bitcoin in US dollars is retrieved from the CryptoCompare API using the `CryptoCompare` class defined in the `data_source/crypto_compare.py` module. The data is split into training and test sets using a specified percentage. The training set is used to train the LSTM model, while the test set is used to evaluate the performance of the model.
 
