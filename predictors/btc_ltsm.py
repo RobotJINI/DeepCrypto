@@ -120,7 +120,7 @@ class BtcLtsm:
         plt.xlabel('Time')
         plt.ylabel('BTC Price')
         plt.legend()
-        plt.show()
+        plt.savefig('btc_price_prediction.png')
     
     def _create_rnn(self, model_name, features_train, results_train, epochs=100, batch_size=32):
         # Initialising the RNN
