@@ -1,0 +1,21 @@
+/* For chatgpt */
+DeepCrypto/
+	__init__.py
+    deep_crypto.py
+    README.md
+    LICENSE
+    data_source/
+        __init__.py
+        crypto_compare.py
+    datasets/
+        btc_price_test.csv
+        btc_price_train.csv
+    predictors/
+    	saved/
+    		btc_ltsm.h5
+   		__init__.py
+        btc_ltsm.py
+    tests/
+    	__init__.py
+        test_btc_ltsm.py
+        test_crypto_compare.py

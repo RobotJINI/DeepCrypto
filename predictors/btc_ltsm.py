@@ -1,9 +1,7 @@
 import data_source.crypto_compare as cc
-import models.csv_writer as csv_writer
-import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import data_source.crypto_compare
+import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential, load_model
 from keras.layers import Dense
@@ -41,15 +39,19 @@ class BtcLtsm:
         self._test_name_base = 'btc_price_test'
         self._model_name_base = 'btc_ltsm'
         self._history = 60
+        self._layer_size = 50
+        self._dropout = 0.2
     
     def update_dataset(self, percent_train=0.98, limit=2000):
         try:
-            ohlcv_list = self._data_source.get_daily_history('BTC', 'USDT', limit=limit)
+            ohlcv_df = self._data_source.get_daily_history('BTC', 'USDT', limit=limit)
             
-            test_start_idx = int(len(ohlcv_list) * percent_train)
+            test_start_idx = int(len(ohlcv_df) * percent_train)
             
-            csv_writer.write_ohlcv(ohlcv_list[:test_start_idx], self._train_name_base)
-            csv_writer.write_ohlcv(ohlcv_list[test_start_idx:], self._test_name_base)
+            train_df = ohlcv_df[:test_start_idx]
+            test_df = ohlcv_df[test_start_idx:]
+            train_df.to_csv(os.path.join('datasets', f'{self._train_name_base}.csv'), index=False)
+            test_df.to_csv(os.path.join('datasets', f'{self._test_name_base}.csv'), index=False)
             return True
         except Exception as e:
             # Catch all exceptions and print the error message
@@ -120,25 +122,25 @@ class BtcLtsm:
         plt.legend()
         plt.show()
     
-    def _create_rnn(self, model_name, features_train, results_train):
+    def _create_rnn(self, model_name, features_train, results_train, epochs=100, batch_size=32):
         # Initialising the RNN
         self._regressor = Sequential()
         
         # Adding the first LSTM layer and some Dropout regularisation
-        self._regressor.add(LSTM(units = 50, return_sequences = True, input_shape = (features_train.shape[1], 1)))
-        self._regressor.add(Dropout(0.2))
+        self._regressor.add(LSTM(units = self._layer_size, return_sequences = True, input_shape = (features_train.shape[1], 1)))
+        self._regressor.add(Dropout(self._dropout))
         
         # Adding a second LSTM layer and some Dropout regularisation
-        self._regressor.add(LSTM(units = 50, return_sequences = True))
-        self._regressor.add(Dropout(0.2))
+        self._regressor.add(LSTM(units = self._layer_size, return_sequences = True))
+        self._regressor.add(Dropout(self._dropout))
         
         # Adding a third LSTM layer and some Dropout regularisation
-        self._regressor.add(LSTM(units = 50, return_sequences = True))
-        self._regressor.add(Dropout(0.2))
+        self._regressor.add(LSTM(units = self._layer_size, return_sequences = True))
+        self._regressor.add(Dropout(self._dropout))
         
         # Adding a fourth LSTM layer and some Dropout regularisation
-        self._regressor.add(LSTM(units = 50))
-        self._regressor.add(Dropout(0.2))
+        self._regressor.add(LSTM(units = self._layer_size))
+        self._regressor.add(Dropout(self._dropout))
         
         # Adding the output layer
         self._regressor.add(Dense(units = 1))
@@ -147,5 +149,5 @@ class BtcLtsm:
         self._regressor.compile(optimizer = 'adam', loss = 'mean_squared_error')
         
         # Fitting the RNN to the Training set
-        self._regressor.fit(features_train, results_train, epochs = 100, batch_size = 32)
+        self._regressor.fit(features_train, results_train, epochs = epochs, batch_size = batch_size)
         self._regressor.save(model_name)
